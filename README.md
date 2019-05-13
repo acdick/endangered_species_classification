@@ -42,9 +42,7 @@ https://ecos.fws.gov
 
 ![Baseline Train KNN](/Plots/Baseline_Train_KNN.png)
 
-![Baseline Test KNN](/Plots/Baseline_Test_KNN.png)
-
-### Balanced Class Model
+### Balanced Class Model with SMOTE Oversampling
 
 ![Class Balance](/Plots/Class_Balance.png)
 
@@ -52,14 +50,10 @@ https://ecos.fws.gov
 
 ![Balanced Train Decision Tree](/Plots/Balanced_Train_Decision_Tree.png)
 
-![Balanced Test Decision Tree](/Plots/Balanced_Test_Decision_Tree.png)
-
 ### Tuned Hyper-Parameter and Balanced Class Model
 
 ![Balanced and Tuned](/Plots/Balanced_and_Tuned.png)
 
 ![Balanced and Tuned Train Logistic](/Plots/Tuned_Train_Logistic.png)
-
-![Balanced and Tuned Test Logistic](/Plots/Tuned_Test_Logistic.png)
 
 ## Future Improvements
