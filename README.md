@@ -40,7 +40,7 @@ https://ecos.fws.gov
 
 ![Baseline](/Plots/Baseline.png)
 
-** Best Training Model by F1 Score **
+**Best Training Model by F1 Score**
 * K Nearest Neighbors
 
 ![Baseline Train KNN](/Plots/Baseline_Train_KNN.png)
@@ -51,7 +51,7 @@ https://ecos.fws.gov
 
 ![Balanced](/Plots/Balanced.png)
 
-** Best Training Model by F1 Score **
+**Best Training Model by F1 Score**
 * Decision Tree
 
 ![Balanced Train Decision Tree](/Plots/Balanced_Train_Decision_Tree.png)
@@ -60,19 +60,19 @@ https://ecos.fws.gov
 
 ![Balanced and Tuned](/Plots/Balanced_and_Tuned.png)
 
-** Best Training Model by F1 Score **
+**Best Training Model by F1 Score**
 * Logistic Regression
 
 ![Balanced and Tuned Train Logistic](/Plots/Tuned_Train_Logistic.png)
 
 Most important features:
 
-** States **
+**States**
 * Idaho
 * Hawaii
 * Wyoming
 
-** Species Groups **
+**Species Groups**
 * Insects
 * Crustaceans
 
