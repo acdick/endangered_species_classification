@@ -36,12 +36,24 @@ https://ecos.fws.gov
 
 ### Baseline Model
 
-![Class Balance](/Plots/Class_Balance.png)
+![Class Imbalance](/Plots/Class_Imbalance.png)
+
+![Baseline](/Plots/Baseline.png)
+
+![Baseline Train KNN](/Plots/Baseline_Train_KNN.png)
 
 ### Balanced Class Model
 
-![Class Imbalance](/Plots/Class_Imbalance.png)
+![Class Balance](/Plots/Class_Balance.png)
+
+![Balanced](/Plots/Balanced.png)
+
+![Balanced Train Decision Tree](/Plots/Balanced_Train_Decision_Tree.png)
 
 ### Tuned Hyper-Parameter and Balanced Class Model
+
+![Balanced and Tuned](/Plots/Balanced_and_Tuned.png)
+
+![Balanced and Tuned Logistic](/Plots/Tuned_Train_Logistic.png)
 
 ## Future Improvements
