@@ -56,4 +56,4 @@ https://ecos.fws.gov
 
 ![Balanced and Tuned Train Logistic](/Plots/Tuned_Train_Logistic.png)
 
-## Future Improvements
+![Feature Importance](/Plots/Feature_Importance.png)
