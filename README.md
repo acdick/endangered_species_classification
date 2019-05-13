@@ -1,15 +1,29 @@
-# Endangered Species Classification
+# Classification of Endangered Species
+
+Predicting the Federal Listing Status of U.S. plant and animal species.
 
 ## Data Sources
 
-U.S. Fish & Wildlife Service
+Data for this project was collected from the U.S. Fish & Wildlife Service.
+
+### U.S. Fish & Wildlife Service
 
 https://ecos.fws.gov
 
-Global Forest Watch
+### Collecting the Data into a Pandas DataFrame
 
-https://www.globalforestwatch.org/dashboards/country/USA?treeLossLocated=eyJwYWdlIjoxfQ%3D%3D
+## Exploratory Data Analysis
 
-U.S. Environmental Protection Data - Air Quality Data
+### Regional Distribution
 
-https://www.epa.gov/outdoor-air-quality-data
+### Species Group
+
+## Classification Models
+
+### Baseline Model
+
+### Balanced Class Model
+
+### Tuned Hyper-Parameter and Balanced Class Model
+
+## Future Improvements
