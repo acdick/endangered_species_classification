@@ -4,7 +4,7 @@ from sklearn.metrics import accuracy_score
 from sklearn.metrics import f1_score
 from sklearn.metrics import confusion_matrix
 
-def fit_predict_metrics(classifiers, X_train, X_test, y_train, y_test, columns):
+def fit_predict_metrics(classifiers, X_train, X_test, y_train, y_test):
     
     metrics = []
     
