@@ -4,67 +4,39 @@ from sklearn.metrics import accuracy_score
 from sklearn.metrics import f1_score
 from sklearn.metrics import confusion_matrix
 
-def classify(classifiers, X_train, X_test, y_train, y_test):
+def fit_predict_metrics(classifiers, X_train, X_test, y_train, y_test, columns):
     
     metrics = []
     
-    for clf in classifiers:
+    for classifier in classifiers:
         
-        # fit and predict all classifiers
-        clf['Classifier'].fit(X_train, y_train)
-        clf['y_hat_train'] = clf['Classifier'].predict(X_train)
-        clf['y_hat_test'] = clf['Classifier'].predict(X_test)
+        # fit all classifiers
+        classifier['Classifier'].fit(X_train, y_train)
         
-        # append all training metrics
-        metrics.append({'Model':            clf['Model'],
+        # predict and append all training metrics
+        classifier['y_hat_train'] = classifier['Classifier'].predict(X_train)
+        
+        metrics.append({'Model':            classifier['Model'],
                         'Split':            'Train',
-                        'Accuracy':         accuracy_score(  y_train, clf['y_hat_train']),
-                        'Precision':        precision_score( y_train, clf['y_hat_train'], average='weighted'),
-                        'Recall':           recall_score(    y_train, clf['y_hat_train'], average='weighted'),
-                        'F1 Score':         f1_score(        y_train, clf['y_hat_train'], average='weighted'),
-                        'Confusion Matrix': confusion_matrix(y_train, clf['y_hat_train'])})
+                        'Best Parameters':  classifier['Classifier'].best_params_,
+                        'Best Estimator':   classifier['Classifier'].best_estimator_,
+                        'Accuracy':         accuracy_score(  y_train, classifier['y_hat_train']),
+                        'Precision':        precision_score( y_train, classifier['y_hat_train'], average='weighted'),
+                        'Recall':           recall_score(    y_train, classifier['y_hat_train'], average='weighted'),
+                        'F1 Score':         f1_score(        y_train, classifier['y_hat_train'], average='weighted'),
+                        'Confusion Matrix': confusion_matrix(y_train, classifier['y_hat_train'])})
         
-        # append all testing metrics
-        metrics.append({'Model':            clf['Model'],
+        # predict and append all testing metrics
+        classifier['y_hat_test'] = classifier['Classifier'].predict(X_test)
+        
+        metrics.append({'Model':            classifier['Model'],
                         'Split':            'Test',
-                        'Accuracy':         accuracy_score(  y_test, clf['y_hat_test']),
-                        'Precision':        precision_score( y_test, clf['y_hat_test'], average='weighted'),
-                        'Recall':           recall_score(    y_test, clf['y_hat_test'], average='weighted'),
-                        'F1 Score':         f1_score(        y_test, clf['y_hat_test'], average='weighted'),
-                        'Confusion Matrix': confusion_matrix(y_test, clf['y_hat_test'])})
-        
+                        'Best Parameters':  classifier['Classifier'].best_params_,
+                        'Best Estimator':   classifier['Classifier'].best_estimator_,
+                        'Accuracy':         accuracy_score(  y_test, classifier['y_hat_test']),
+                        'Precision':        precision_score( y_test, classifier['y_hat_test'], average='weighted'),
+                        'Recall':           recall_score(    y_test, classifier['y_hat_test'], average='weighted'),
+                        'F1 Score':         f1_score(        y_test, classifier['y_hat_test'], average='weighted'),
+                        'Confusion Matrix': confusion_matrix(y_test, classifier['y_hat_test'])})
+    
     return classifiers, metrics
-
-def grid_search(grid_searches, X_train, X_test, y_train, y_test, columns):
-    
-    metrics = []
-    
-    for gs in grid_searches:
-        # fit and predict all grid_searches
-        gs['Classifier'].fit(X_train, y_train)
-        gs['y_hat_train'] = gs['Classifier'].predict(X_train)
-        gs['y_hat_test']  = gs['Classifier'].predict(X_test)
-        
-        # append all training metrics
-        metrics.append({'Model':            gs['Model'],
-                        'Split':            'Train',
-                        'Best Parameters':  gs['Classifier'].best_params_,
-                        'Best Estimator':   gs['Classifier'].best_estimator_,
-                        'Accuracy':         accuracy_score(  y_train, gs['y_hat_train']),
-                        'Precision':        precision_score( y_train, gs['y_hat_train'], average='weighted'),
-                        'Recall':           recall_score(    y_train, gs['y_hat_train'], average='weighted'),
-                        'F1 Score':         f1_score(        y_train, gs['y_hat_train'], average='weighted'),
-                        'Confusion Matrix': confusion_matrix(y_train, gs['y_hat_train'])})
-        
-        # append all testing metrics
-        metrics.append({'Model':            gs['Model'],
-                        'Split':            'Test',
-                        'Best Parameters':  gs['Classifier'].best_params_,
-                        'Best Estimator':   gs['Classifier'].best_estimator_,
-                        'Accuracy':         accuracy_score(  y_test, gs['y_hat_test']),
-                        'Precision':        precision_score( y_test, gs['y_hat_test'], average='weighted'),
-                        'Recall':           recall_score(    y_test, gs['y_hat_test'], average='weighted'),
-                        'F1 Score':         f1_score(        y_test, gs['y_hat_test'], average='weighted'),
-                        'Confusion Matrix': confusion_matrix(y_test, gs['y_hat_test'])})
-    
-    return grid_searches, metrics
