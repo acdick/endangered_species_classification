@@ -176,7 +176,7 @@ def fit_predict_measure(data_name, X_train, X_test, y_train, y_test, y_labels, c
     return all_models
 
 def plot_confusion_matrices(confusion_matrices, y_labels):
-    fig, axes = plt.subplots(confusion_matrices.shape[0], confusion_matrices.shape[1], figsize=(10,25))
+    fig, axes = plt.subplots(confusion_matrices.shape[0], confusion_matrices.shape[1], figsize=(15,40))
     
     for i in range(confusion_matrices.shape[0]):
         for j in range(confusion_matrices.shape[1]):
