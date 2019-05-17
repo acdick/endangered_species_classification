@@ -2,7 +2,7 @@ from sklearn.model_selection import GridSearchCV
 
 from sklearn.dummy        import DummyClassifier
 from sklearn.linear_model import LogisticRegression
-from sklearn.naive_bayes  import GaussianNB
+from sklearn.naive_bayes  import MultinomialNB
 from sklearn.neighbors    import KNeighborsClassifier
 from sklearn.tree         import DecisionTreeClassifier
 from sklearn.ensemble     import RandomForestClassifier
@@ -13,6 +13,11 @@ from sklearn.metrics import recall_score
 from sklearn.metrics import accuracy_score
 from sklearn.metrics import f1_score
 from sklearn.metrics import confusion_matrix
+
+import numpy             as np
+import matplotlib.pyplot as plt
+import seaborn           as sns
+sns.set_style("darkgrid")
 
 import pandas as pd
 
@@ -45,11 +50,11 @@ def grid_search_logistic_regression(parameters):
     
     return classifier
 
-def grid_search_gaussian_nb(parameters):
+def grid_search_multinomial_nb(parameters):
     
-    classifier = {'Classifier': 'Gaussian NB',
+    classifier = {'Classifier': 'Multinomial NB',
                   'Grid Search': GridSearchCV(
-                      GaussianNB(),
+                      MultinomialNB(),
                       parameters,
                       cv=5,
                       scoring=['accuracy', 'precision_weighted', 'recall_weighted', 'f1_weighted'],
@@ -144,40 +149,49 @@ def fit_predict_measure(data_name, X_train, X_test, y_train, y_test, y_labels, c
                                                  'mean_test_recall_weighted':    'Recall',
                                                  'mean_test_f1_weighted':        'F1 Score'})
         
-        train['Data']       = data_name
-        train['Classifier'] = classifier['Classifier']
-        train['Split']      = 'Train'
+        train['Data']             = data_name
+        train['Classifier']       = classifier['Classifier']
+        train['Split']            = 'Train'
         all_models = all_models.append(train, ignore_index=True)
         
         # hold-out test performance for best estimators
         y_hat_test = classifier['Grid Search'].predict(X_test)
         
         all_models = all_models.append(
-            {'Parameters': classifier['Grid Search'].best_params_,
-             'Accuracy':   accuracy_score( y_test, y_hat_test),
-             'Precision':  precision_score(y_test, y_hat_test, average='weighted'),
-             'Recall':     recall_score(   y_test, y_hat_test, average='weighted'),
-             'F1 Score':   f1_score(       y_test, y_hat_test, average='weighted'),
-             'Data':       data_name,
-             'Classifier': classifier['Classifier'],
-             'Split':      'Test'}, ignore_index=True)
+            {'Parameters':       classifier['Grid Search'].best_params_,
+             'Accuracy':         accuracy_score( y_test, y_hat_test),
+             'Precision':        precision_score(y_test, y_hat_test, average='weighted'),
+             'Recall':           recall_score(   y_test, y_hat_test, average='weighted'),
+             'F1 Score':         f1_score(       y_test, y_hat_test, average='weighted'),
+             'Data':             data_name,
+             'Classifier':       classifier['Classifier'],
+             'Split':            'Test',
+             'Confusion Matrix': confusion_matrix(y_test, y_hat_test, labels=y_labels)}, ignore_index=True)
         
-    all_models = all_models[['Data', 'Classifier', 'Parameters', 'Split',
-                             'Accuracy', 'Precision', 'Recall', 'F1 Score']]
+    all_models = all_models[['Data',     'Classifier', 'Parameters', 'Split',
+                             'Accuracy', 'Precision',  'Recall',     'F1 Score',
+                             'Confusion Matrix']]
         
     return all_models
 
-def plot_best_confusion_matrices():
-    cm = confusion_matrix(y_train, classifiers[0]['y_hat_train'], labels=list(y.unique()))
-    cm
+def plot_confusion_matrices(confusion_matrices, y_labels):
+    fig, axes = plt.subplots(confusion_matrices.shape[0], confusion_matrices.shape[1], figsize=(10,25))
     
-    fig, ax = plt.subplots(figsize=(3,3))
-    sns.heatmap(cm,
-            cmap='Blues',cbar=False,
-            annot=True,
-            fmt="d",
-            linewidths=.5,
-            xticklabels=list(y.unique()),
-            yticklabels=list(y.unique()),square=True)
-    
-    return False
+    for i in range(confusion_matrices.shape[0]):
+        for j in range(confusion_matrices.shape[1]):
+            cm = confusion_matrices.iloc[i][j]
+            cm = cm.astype('float') / np.sum(cm)
+            
+            sns.heatmap(
+                cm,
+                cmap='Blues',
+                cbar=False,
+                annot=True,
+                fmt='.0%',
+                linewidths=.5,
+                xticklabels=y_labels,
+                yticklabels=y_labels,
+                square=True,
+                ax=axes[i,j])
+            
+    return fig, axes
