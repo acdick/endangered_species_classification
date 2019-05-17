@@ -52,7 +52,7 @@ def grid_search_logistic_regression(parameters):
 
 def grid_search_multinomial_nb(parameters):
     
-    classifier = {'Classifier': 'Multinomial NB',
+    classifier = {'Classifier': 'Multinomial Naive Bayes',
                   'Grid Search': GridSearchCV(
                       MultinomialNB(),
                       parameters,
@@ -132,6 +132,7 @@ def fit_predict_measure(data_name, X_train, X_test, y_train, y_test, y_labels, c
     for classifier in classifiers:
         
         # fit training set
+        print('Running jobs: ' + classifier['Classifier'])
         classifier['Grid Search'].fit(X_train, y_train)
         
         # cross-validated training metrics
