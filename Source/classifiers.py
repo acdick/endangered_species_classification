@@ -13,6 +13,7 @@ from sklearn.metrics import recall_score
 from sklearn.metrics import accuracy_score
 from sklearn.metrics import f1_score
 from sklearn.metrics import confusion_matrix
+from sklearn.metrics import coverage_error
 
 import numpy             as np
 import matplotlib.pyplot as plt
@@ -138,13 +139,17 @@ def fit_predict_measure(data_name, X_train, X_test, y_train, y_test, y_labels, c
         # cross-validated training metrics
         train = pd.DataFrame(classifier['Grid Search'].cv_results_)
         
-        train = train[['params',
+        train = train[['mean_fit_time',
+                       'mean_score_time',
+                       'params',
                        'mean_test_accuracy',
                        'mean_test_precision_weighted',
                        'mean_test_recall_weighted',
                        'mean_test_f1_weighted']]
         
-        train = train.rename(index=str, columns={'params':                       'Parameters',
+        train = train.rename(index=str, columns={'mean_fit_time':                'Fit Time',
+                                                 'mean_score_time':              'Score Time',
+                                                 'params':                       'Parameters',
                                                  'mean_test_accuracy':           'Accuracy',
                                                  'mean_test_precision_weighted': 'Precision',
                                                  'mean_test_recall_weighted':    'Recall',
@@ -170,7 +175,7 @@ def fit_predict_measure(data_name, X_train, X_test, y_train, y_test, y_labels, c
              'Confusion Matrix': confusion_matrix(y_test, y_hat_test, labels=y_labels)}, ignore_index=True)
         
     all_models = all_models[['Data',     'Classifier', 'Parameters', 'Split',
-                             'Accuracy', 'Precision',  'Recall',     'F1 Score',
+                             'Accuracy', 'Precision',  'Recall',     'F1 Score', 'Fit Time', 'Score Time',
                              'Confusion Matrix']]
         
     return all_models
