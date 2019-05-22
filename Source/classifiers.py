@@ -13,7 +13,6 @@ from sklearn.metrics import recall_score
 from sklearn.metrics import accuracy_score
 from sklearn.metrics import f1_score
 from sklearn.metrics import confusion_matrix
-from sklearn.metrics import coverage_error
 
 import numpy             as np
 import matplotlib.pyplot as plt
@@ -29,8 +28,8 @@ def grid_search_dummy_classifier(parameters):
                       DummyClassifier(),
                       parameters,
                       cv=5,
-                      scoring=['accuracy', 'precision_weighted', 'recall_weighted', 'f1_weighted'],
-                      refit='f1_weighted',
+                      scoring=['accuracy', 'precision_macro', 'recall_macro', 'f1_macro'],
+                      refit='f1_macro',
                       return_train_score=False,
                       verbose=1)}
     
@@ -43,8 +42,8 @@ def grid_search_logistic_regression(parameters):
                       LogisticRegression(),
                       parameters,
                       cv=5,
-                      scoring=['accuracy', 'precision_weighted', 'recall_weighted', 'f1_weighted'],
-                      refit='f1_weighted',
+                      scoring=['accuracy', 'precision_macro', 'recall_macro', 'f1_macro'],
+                      refit='f1_macro',
                       return_train_score=False,
                       verbose=10,
                       n_jobs=-1)}
@@ -58,8 +57,8 @@ def grid_search_multinomial_nb(parameters):
                       MultinomialNB(),
                       parameters,
                       cv=5,
-                      scoring=['accuracy', 'precision_weighted', 'recall_weighted', 'f1_weighted'],
-                      refit='f1_weighted',
+                      scoring=['accuracy', 'precision_macro', 'recall_macro', 'f1_macro'],
+                      refit='f1_macro',
                       return_train_score=False,
                       verbose=10,
                       n_jobs=-1)}
@@ -73,8 +72,8 @@ def grid_search_k_neighbors_classifier(parameters):
                       KNeighborsClassifier(),
                       parameters,
                       cv=5,
-                      scoring=['accuracy', 'precision_weighted', 'recall_weighted', 'f1_weighted'],
-                      refit='f1_weighted',
+                      scoring=['accuracy', 'precision_macro', 'recall_macro', 'f1_macro'],
+                      refit='f1_macro',
                       return_train_score=False,
                       verbose=10,
                       n_jobs=-1)}
@@ -88,8 +87,8 @@ def grid_search_decision_tree_classifier(parameters):
                       DecisionTreeClassifier(),
                       parameters,
                       cv=5,
-                      scoring=['accuracy', 'precision_weighted', 'recall_weighted', 'f1_weighted'],
-                      refit='f1_weighted',
+                      scoring=['accuracy', 'precision_macro', 'recall_macro', 'f1_macro'],
+                      refit='f1_macro',
                       return_train_score=False,
                       verbose=10,
                       n_jobs=-1)}
@@ -103,8 +102,8 @@ def grid_search_random_forest_classifier(parameters):
                       RandomForestClassifier(),
                       parameters,
                       cv=5,
-                      scoring=['accuracy', 'precision_weighted', 'recall_weighted', 'f1_weighted'],
-                      refit='f1_weighted',
+                      scoring=['accuracy', 'precision_macro', 'recall_macro', 'f1_macro'],
+                      refit='f1_macro',
                       return_train_score=False,
                       verbose=10,
                       n_jobs=-1)}
@@ -118,15 +117,15 @@ def grid_search_ada_boost_classifier(parameters):
                       AdaBoostClassifier(),
                       parameters,
                       cv=5,
-                      scoring=['accuracy', 'precision_weighted', 'recall_weighted', 'f1_weighted'],
-                      refit='f1_weighted',
+                      scoring=['accuracy', 'precision_macro', 'recall_macro', 'f1_macro'],
+                      refit='f1_macro',
                       return_train_score=False,
                       verbose=10,
                       n_jobs=-1)}
     
     return classifier
 
-def fit_predict_measure(data_name, X_train, X_test, y_train, y_test, y_labels, classifiers):
+def fit_predict_measure(balance, X_train, X_test, y_train, y_test, y_labels, classifiers):
     
     all_models = pd.DataFrame()
     
@@ -143,21 +142,22 @@ def fit_predict_measure(data_name, X_train, X_test, y_train, y_test, y_labels, c
                        'mean_score_time',
                        'params',
                        'mean_test_accuracy',
-                       'mean_test_precision_weighted',
-                       'mean_test_recall_weighted',
-                       'mean_test_f1_weighted']]
+                       'mean_test_precision_macro',
+                       'mean_test_recall_macro',
+                       'mean_test_f1_macro']]
         
-        train = train.rename(index=str, columns={'mean_fit_time':                'Fit Time',
-                                                 'mean_score_time':              'Score Time',
-                                                 'params':                       'Parameters',
-                                                 'mean_test_accuracy':           'Accuracy',
-                                                 'mean_test_precision_weighted': 'Precision',
-                                                 'mean_test_recall_weighted':    'Recall',
-                                                 'mean_test_f1_weighted':        'F1 Score'})
+        train = train.rename(index=str, columns={'mean_fit_time':             'Fit Time',
+                                                 'mean_score_time':           'Score Time',
+                                                 'params':                    'Parameters',
+                                                 'mean_test_accuracy':        'Accuracy',
+                                                 'mean_test_precision_macro': 'Precision',
+                                                 'mean_test_recall_macro':    'Recall',
+                                                 'mean_test_f1_macro':        'F1 Score'})
         
-        train['Data']             = data_name
+        train['Balance']          = balance
         train['Classifier']       = classifier['Classifier']
         train['Split']            = 'Train'
+        train['Total Time']       = train['Fit Time'] + train['Score Time']
         all_models = all_models.append(train, ignore_index=True)
         
         # hold-out test performance for best estimators
@@ -165,17 +165,21 @@ def fit_predict_measure(data_name, X_train, X_test, y_train, y_test, y_labels, c
         
         all_models = all_models.append(
             {'Parameters':       classifier['Grid Search'].best_params_,
+             'Fit Time':         train.loc[train['Parameters'] == classifier['Grid Search'].best_params_, 'Fit Time'][0],
+             'Score Time':       train.loc[train['Parameters'] == classifier['Grid Search'].best_params_, 'Score Time'][0],
+             'Total Time':       train.loc[train['Parameters'] == classifier['Grid Search'].best_params_, 'Total Time'][0],
              'Accuracy':         accuracy_score( y_test, y_hat_test),
-             'Precision':        precision_score(y_test, y_hat_test, average='weighted'),
-             'Recall':           recall_score(   y_test, y_hat_test, average='weighted'),
-             'F1 Score':         f1_score(       y_test, y_hat_test, average='weighted'),
-             'Data':             data_name,
+             'Precision':        precision_score(y_test, y_hat_test, average='macro'),
+             'Recall':           recall_score(   y_test, y_hat_test, average='macro'),
+             'F1 Score':         f1_score(       y_test, y_hat_test, average='macro'),
+             'Balance':          balance,
              'Classifier':       classifier['Classifier'],
              'Split':            'Test',
              'Confusion Matrix': confusion_matrix(y_test, y_hat_test, labels=y_labels)}, ignore_index=True)
         
-    all_models = all_models[['Data',     'Classifier', 'Parameters', 'Split',
-                             'Accuracy', 'Precision',  'Recall',     'F1 Score', 'Fit Time', 'Score Time',
+    all_models = all_models[['Balance',  'Classifier', 'Parameters', 'Split',
+                             'Accuracy', 'Precision',  'Recall',     'F1 Score',
+                             'Fit Time', 'Score Time', 'Total Time',
                              'Confusion Matrix']]
         
     return all_models
