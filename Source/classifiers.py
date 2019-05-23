@@ -185,12 +185,15 @@ def fit_predict_measure(balance, X_train, X_test, y_train, y_test, y_labels, cla
     return all_models
 
 def plot_confusion_matrices(confusion_matrices, y_labels):
-    fig, axes = plt.subplots(confusion_matrices.shape[0], confusion_matrices.shape[1], figsize=(15,32))
+    fig, axes = plt.subplots(nrows=confusion_matrices.shape[0],
+                             ncols=confusion_matrices.shape[1],
+                             figsize=(14,36))
     
     for i in range(confusion_matrices.shape[0]):
         for j in range(confusion_matrices.shape[1]):
             cm = confusion_matrices.iloc[i][j]
             cm = cm.astype('float') / np.sum(cm)
+            cm = pd.DataFrame(cm, columns=y_labels, index=y_labels)
             
             sns.heatmap(
                 cm,
@@ -199,9 +202,12 @@ def plot_confusion_matrices(confusion_matrices, y_labels):
                 annot=True,
                 fmt='.0%',
                 linewidths=.5,
-                xticklabels=y_labels,
-                yticklabels=y_labels,
                 square=True,
                 ax=axes[i,j])
+            
+            title = confusion_matrices.columns[j] + ': ' + confusion_matrices.index[i]
+            axes[i,j].set_title(label=title)
+            axes[i,j].set(xlabel='Predicted Label', ylabel='True Label')
+            axes[i,j].set_yticklabels(labels=y_labels, fontdict={'verticalalignment': 'center'})
             
     return fig, axes
