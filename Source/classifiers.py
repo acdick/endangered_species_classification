@@ -182,7 +182,7 @@ def fit_predict_measure(balance, X_train, X_test, y_train, y_test, y_labels, cla
                              'Fit Time', 'Score Time', 'Total Time',
                              'Confusion Matrix']]
         
-    return all_models
+    return all_models, classifiers
 
 def plot_confusion_matrices(confusion_matrices, y_labels):
     fig, axes = plt.subplots(nrows=confusion_matrices.shape[0],
