@@ -7,6 +7,7 @@ from sklearn.neighbors    import KNeighborsClassifier
 from sklearn.tree         import DecisionTreeClassifier
 from sklearn.ensemble     import RandomForestClassifier
 from sklearn.ensemble     import AdaBoostClassifier
+from sklearn.svm          import SVC
 
 from sklearn.metrics import precision_score
 from sklearn.metrics import recall_score
@@ -115,6 +116,21 @@ def grid_search_ada_boost_classifier(parameters):
     classifier = {'Classifier': 'Ada Boost',
                   'Grid Search': GridSearchCV(
                       AdaBoostClassifier(),
+                      parameters,
+                      cv=5,
+                      scoring=['accuracy', 'precision_macro', 'recall_macro', 'f1_macro'],
+                      refit='f1_macro',
+                      return_train_score=False,
+                      verbose=10,
+                      n_jobs=-1)}
+    
+    return classifier
+
+def grid_search_support_vector_classifier(parameters):
+    
+    classifier = {'Classifier': 'Support Vector Machines',
+                  'Grid Search': GridSearchCV(
+                      SVC(),
                       parameters,
                       cv=5,
                       scoring=['accuracy', 'precision_macro', 'recall_macro', 'f1_macro'],
